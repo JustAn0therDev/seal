@@ -22,7 +22,7 @@ while capture.isOpened():
 
         cv2.imshow('Seal', img)
 
-        if cv2.waitKey(10) & 0xFF == ord('q'):
+        if cv2.waitKey(30) & 0xFF == ord('q'):
             break
 
     continue

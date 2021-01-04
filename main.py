@@ -13,8 +13,6 @@ while capture.isOpened():
         biggest: float = 0
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        print(type(gray))
-
         # detect key feature points
         sift = cv2.xfeatures2d.SIFT_create()
         kp, des = sift.detectAndCompute(gray, None)
@@ -25,14 +23,14 @@ while capture.isOpened():
                 biggest = keypoint.size
 
         # print biggest ord found
-        print(biggest)
+        # print(biggest)
 
         # draw key points detected
         img = cv2.drawKeypoints(gray, kp, gray, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
         cv2.imshow('Seal', img)
 
-        if cv2.waitKey(100) & 0xFF == ord('q'):
+        if cv2.waitKey(30) & 0xFF == ord('q'):
             break
 
     continue
