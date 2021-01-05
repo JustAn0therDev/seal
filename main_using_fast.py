@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 
 # capture = cv2.VideoCapture('day_in_the_life.mp4')
 # capture = cv2.VideoCapture('driving.mp4')

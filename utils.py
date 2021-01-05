@@ -4,5 +4,4 @@ def get_biggest_keypoint(keypoint) -> float:
         if kp.size > biggest:
             biggest = kp.size
 
-
     return biggest
