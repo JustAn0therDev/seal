@@ -1,5 +1,5 @@
 import cv2
-import numpy as np
+# import numpy as np
 
 capture = cv2.VideoCapture('driving.mp4')
 
@@ -22,8 +22,9 @@ while capture.isOpened():
             if keypoint.size > biggest:
                 biggest = keypoint.size
 
-        # print biggest ord found
-        # print(biggest)
+        # print biggest orb found if more than 130
+        if biggest > 115:
+            print("Large orb detected! Size: " + str(biggest))
 
         # draw key points detected
         img = cv2.drawKeypoints(gray, kp, gray, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
