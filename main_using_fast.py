@@ -1,21 +1,21 @@
 import cv2
 import numpy as np
+from matplotlib import pyplot as plt
+from sys import argv
 
 # TODO LIST:
-# Create a mask image
-# Detect the lines to draw
-# Get mask image with drawn lines
-# Draw lines
-# Sum the binary content of both images (masked and grayscale) into one image to display the drawn lanes + keypoints.
+# REFACTOR AND THEN OPTIMIZE. ITS EASIER TO OPTIMIZE WITH MORE READABLE CODE.
 
 # The last item might help identify if an object is closer than it should be to the car.
 # TODO FUTURE RUAN: Check if the keypoints are close or inside the "triangle" that composes a lane. That should do it.
-# TODO FUTURE RUAN: Check if the keypoints are a bit upper to the lane; They might represent a close object at the end.
-# TODO FUTURE RUAN: Computational Lane Detection -> https://www.youtube.com/watch?v=eLTLtUVuuy4&ab_channel=ProgrammingKnowledge
+# TODO FUTURE RUAN: Check if the keypoints are a bit upper to the lane; They might represent a close object at the end
+# (of the lane).
 
-# capture = cv2.VideoCapture('day_in_the_life.mp4')
 capture = cv2.VideoCapture('driving.mp4')
-# capture = cv2.VideoCapture('walking_on_the_street.mp4')
+# capture = cv2.VideoCapture('driving_lane.mp4')
+# capture = cv2.VideoCapture('driving_fast.mp4')
+# capture = cv2.VideoCapture('fast_bike.mp4')
+lane_space_test_img = cv2.imread('lane_space_test.jpg')
 
 if not capture.isOpened():
     print('Error while opening video.')
@@ -25,53 +25,85 @@ COMMON_THRESHOLD = 100
 
 class FastDetector:
     def __init__(self, current_frame, threshold: int):
-        self.converted_img_from_frame = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
+        self.converted_img_from_frame = cv2.cvtColor(current_frame, cv2.COLOR_RGB2BGR)
         self.fast_instance = cv2.FastFeatureDetector_create(threshold)
         self.blurred = cv2.GaussianBlur(self.converted_img_from_frame, (5, 5), 0)
         self.canny = cv2.Canny(self.blurred, 50, 150)
         self.lines = None
+        self.line_image = None
+        self.polygons = None
+        self.masked_image = None
         self.kp = []
 
     def set_kp_from_converted_img(self):
         self.kp = self.fast_instance.detect(self.converted_img_from_frame, None)
 
+    def set_polygons(self):
+        left = 25
+        right = 570
+        x_middle = 300
+        y_middle = 110
+        video_height = self.canny.shape[0]
+        self.polygons = np.array([[(left, video_height), (right, video_height), (x_middle, y_middle)]])
+
+    def set_masked_region_of_interest(self):
+        mask = np.zeros_like(self.canny)
+        cv2.fillPoly(mask, self.polygons, 255)
+        masked_image = cv2.bitwise_and(self.canny, mask)
+        self.masked_image = masked_image
+
     def draw_lines(self):
-        # TODO: pass in the cropped_image, not canny
-        self.lines = cv2.HoughLinesP(self.canny, 2, np.pi/180,
-                                     COMMON_THRESHOLD,
-                                     np.array([]),
-                                     minLineLength=40,
-                                     maxLineGap=5)
+        self.lines = cv2.HoughLinesP(self.masked_image, 2, np.pi/180, 100, np.array([]), minLineLength=40, maxLineGap=5)
 
-    def get_image_with_keypoints(self, color: tuple, run_canny: bool):
-        if run_canny:
-            return cv2.drawKeypoints(self.canny, self.kp, None, color, cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    def get_image_with_lanes(self):
+        self.line_image = np.zeros_like(self.converted_img_from_frame)
+        if self.lines is not None:
+            for line in self.lines:
+                x1, y1, x2, y2 = line.reshape(4)
+                cv2.line(self.line_image, (x1, y1), (x2, y2), (0, 255, 0), 10)
 
-        return cv2.drawKeypoints(self.blurred, self.kp, None, color=color,
-                                 flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        return cv2.addWeighted(self.converted_img_from_frame, 0.8, self.line_image, 1, 0)
+
+    def get_image_with_keypoints(self, img, color: tuple):
+        return cv2.drawKeypoints(img, self.kp, None, color, cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
 
-while capture.isOpened():
-    captured, frame = capture.read()
-    video_width: float = capture.get(cv2.CAP_PROP_FRAME_WIDTH)
-    video_height: float = capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    middle = (video_height // 2, video_width // 2)
-    if captured:
-        fd = FastDetector(frame, threshold=COMMON_THRESHOLD)
+def run():
+    while capture.isOpened():
+        captured, frame = capture.read()
+        if captured:
+            fd = FastDetector(np.copy(frame), threshold=COMMON_THRESHOLD)
 
-        fd.set_kp_from_converted_img()
+            fd.set_polygons()
+            fd.set_masked_region_of_interest()
+            fd.draw_lines()
+            fd.set_kp_from_converted_img()
+            lanes_img = fd.get_image_with_lanes()
+            img_with_keypoints = fd.get_image_with_keypoints(lanes_img, (0, 255, 0))
 
-        img_with_keypoints = fd.get_image_with_keypoints((0, 255, 0), run_canny=True)
+            """ 
+                TODO: THIS SHOULD BE A METHOD IN THE FASTDETECTOR CLASS
+                if (len(fd.kp)) > 0:
+                for keypoint in fd.kp:
+                    if abs(keypoint.pt[0] - middle[0]) <= 150 or abs(keypoint.pt[1] - middle[1]) <= 150:
+                        print('Detected object: %s' % str((keypoint.pt[0], keypoint.pt[1]))) 
+            """
 
-        for keypoint in fd.kp:
-            if abs(keypoint.pt[0] - middle[0]) <= 150 or abs(keypoint.pt[1] - middle[1]) <= 150:
-                print('Detected object: %s' % str((keypoint.pt[0], keypoint.pt[1])))
+            cv2.imshow('Seal', cv2.cvtColor(img_with_keypoints, cv2.COLOR_RGB2GRAY))
 
-        cv2.imshow('Seal', img_with_keypoints)
+            if cv2.waitKey(10) & 0xFF == ord('q'):
+                break
 
-        if cv2.waitKey(10) & 0xFF == ord('q'):
-            break
+    capture.release()
+    cv2.destroyAllWindows()
 
-capture.release()
-cv2.destroyAllWindows()
 
+def test_lane():
+    plt.imshow(lane_space_test_img)
+    plt.show()
+
+
+if len(argv) == 0 or argv[1] == 'run':
+    run()
+elif argv[1] == 'test':
+    test_lane()

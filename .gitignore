@@ -1,4 +1,7 @@
 __pycache__/
 .idea/
 *.mp4
+*.jpg
+*.jpeg
+*.png
 venv/
