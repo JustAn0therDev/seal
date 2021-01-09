@@ -11,7 +11,8 @@ class FileOpener:
     }
 
     __dictionary_of_types_and_images = {
-        ImageType.LANE_TEST: cv2.imread('lane_space_test.jpg')
+        ImageType.LANE_TEST: cv2.imread('lane_space_test.jpg'),
+        ImageType.PANEL_TEST: cv2.imread('panel_test.jpg')
     }
 
     @staticmethod

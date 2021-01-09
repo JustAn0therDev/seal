@@ -2,7 +2,10 @@ from os import system
 
 import cv2
 import numpy as np
+
+from utils.camera_axis_factory import CameraAxisFactory
 from utils.constants import COMMON_THRESHOLD
+from enums.camera_position import CameraPosition
 
 
 class Detector:
@@ -11,7 +14,8 @@ class Detector:
     middle_x_axis: int
     middle_y_axis: int
 
-    def __init__(self, current_frame, threshold: int):
+    def __init__(self, current_frame, threshold: int, camera_position: CameraPosition):
+        self.camera_position = camera_position
         self.converted_img_from_frame = cv2.cvtColor(current_frame, cv2.COLOR_RGB2GRAY)
         self.fast_instance = cv2.FastFeatureDetector_create(threshold)
         self.blurred = cv2.GaussianBlur(self.converted_img_from_frame, (5, 5), 0)
@@ -27,18 +31,20 @@ class Detector:
         self.keypoints = self.fast_instance.detect(self.converted_img_from_frame, None)
 
     def set_polygons_representing_lane_region(self):
-        self.min_x_axis = 25
-        self.max_x_axis = 570
-        self.middle_x_axis = 300
-        self.middle_y_axis = 110
+        positions = CameraAxisFactory.make_camera_axis_object(self.camera_position)
         video_height = self.canny.shape[0]
         self.polygons = np.array(
             [
-                [(self.min_x_axis, video_height),
-                 (self.max_x_axis, video_height),
-                 (self.middle_x_axis, self.middle_y_axis)]
+                [(positions.min_x_axis, video_height),
+                 (positions.max_x_axis, video_height),
+                 (positions.middle_x_axis, positions.middle_y_axis)]
             ]
         )
+
+        self.min_x_axis = positions.min_x_axis
+        self.max_x_axis = positions.max_x_axis
+        self.middle_y_axis = positions.middle_y_axis
+        self.middle_x_axis = positions.middle_x_axis
 
     def set_masked_image(self):
         mask = np.zeros_like(self.canny)
@@ -77,15 +83,16 @@ class Detector:
                                  color,
                                  cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
-    def print_detected_close_objects(self):
+    def print_object_detection(self):
         if (len(self.keypoints)) > 0:
             detected_count = 0
             for keypoint in self.keypoints:
+                # TODO: Refactor this and separate detection for each camera positioning
                 x, y = keypoint.pt
-                if self.min_x_axis <= x < self.max_x_axis \
-                        and y >= self.middle_y_axis and abs(y - self.middle_x_axis) < 30:
+                if self.min_x_axis <= x < self.max_x_axis and y >= self.middle_y_axis:
                     # print('Detected object: %s' % str((x, y)))
                     detected_count += 1
-            if detected_count >= 5:
+            if self.camera_position == CameraPosition.PANEL and detected_count >= 8:
                 print('CLOSE OBJECT. Detected: %i' % detected_count)
-
+            elif self.camera_position != CameraPosition.PANEL and detected_count >= 5:
+                print('CLOSE OBJECT. Detected: %i' % detected_count)
