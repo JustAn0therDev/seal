@@ -53,10 +53,7 @@ while capture.isOpened():
 
             if cv2.waitKey(20) & 0xFF == ord('q'):
                 break
-
         last_frame = frame
-
-    continue
 
 capture.release()
 cv2.destroyAllWindows()
