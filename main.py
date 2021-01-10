@@ -3,23 +3,22 @@ import numpy as np
 from sys import argv
 from detector import Detector
 from matplotlib import pyplot as plt
-from utils.constants import COMMON_THRESHOLD
 from utils.file_opener import FileOpener
-from enums.video_type import VideoType
 from enums.image_type import ImageType
+from enums.video_type import VideoType
+from utils.constants import COMMON_THRESHOLD
 from enums.camera_position import CameraPosition
 
-# TODO:
-# Panel is working fine. The only types of cameras supported will be roof and panel, since
-# putting a camera in front of the hood is a really bad idea.
+# TODO: The only types of cameras supported will be roof and panel;
+# TODO: Object detection should exist separately for each type of camera position;
+# TODO: Object detection should be separated in it's own class; and
+# TODO: Object detection should be implemented using strategy pattern (same data, different algorithm).
 
 opened_video_capture = FileOpener.get_video_capture_by_video_type(VideoType.SLOW)
 lane_space_test_img = FileOpener.get_image_by_image_type(ImageType.PANEL_TEST)
 
 if not opened_video_capture.isOpened():
     print('Error while opening video.')
-
-COMMON_THRESHOLD = 100
 
 
 class Program:
@@ -64,15 +63,18 @@ def test_lane():
 
 
 if len(argv) == 0 or argv[1] == 'run':
-    pos = None
     program = Program(opened_video_capture)
 
-    if argv[2] == 'roof':
+    if len(argv) <= 2:
+        raise Exception(
+            "You must provide a camera position argument. "
+            "Choose either 'roof' or 'panel', depending on the camera position"
+        )
+
+    if argv[2].lower() == 'roof':
         pos = CameraPosition.ROOF
-    elif argv[2] == 'panel':
+    elif argv[2].lower() == 'panel':
         pos = CameraPosition.PANEL
-    elif argv[2] == 'hood':
-        pos = CameraPosition.HOOD
     else:
         raise Exception("You cannot run the program without specifying a valid camera position.")
 
