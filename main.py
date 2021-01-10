@@ -9,13 +9,8 @@ from enums.video_type import VideoType
 from utils.constants import COMMON_THRESHOLD
 from enums.camera_position import CameraPosition
 
-# TODO: The only types of cameras supported will be roof and panel;
-# TODO: Object detection should exist separately for each type of camera position;
-# TODO: Object detection should be separated in it's own class; and
-# TODO: Object detection should be implemented using strategy pattern (same data, different algorithm).
-
-opened_video_capture = FileOpener.get_video_capture_by_video_type(VideoType.SLOW)
-lane_space_test_img = FileOpener.get_image_by_image_type(ImageType.PANEL_TEST)
+opened_video_capture = FileOpener.get_video_capture_by_video_type(VideoType.PARKING)
+lane_space_test_img = FileOpener.get_image_by_image_type(ImageType.ROOF_TEST)
 
 if not opened_video_capture.isOpened():
     print('Error while opening video.')
@@ -47,7 +42,7 @@ class Program:
 
                 cv2.imshow('Seal', img_with_keypoints)
 
-                if cv2.waitKey(10) & 0xFF == ord('q'):
+                if cv2.waitKey(25) & 0xFF == ord('q'):
                     break
 
             else:

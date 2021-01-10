@@ -7,12 +7,14 @@ class FileOpener:
     __dictionary_of_types_and_videos = {
         VideoType.SLOW: cv2.VideoCapture('driving.mp4'),
         VideoType.NORMAL: cv2.VideoCapture('driving_lane.mp4'),
-        VideoType.FAST: cv2.VideoCapture('driving_fast.mp4')
+        VideoType.FAST: cv2.VideoCapture('driving_fast.mp4'),
+        VideoType.PARKING: cv2.VideoCapture('parking.mp4')
     }
 
     __dictionary_of_types_and_images = {
         ImageType.LANE_TEST: cv2.imread('lane_space_test.jpg'),
-        ImageType.PANEL_TEST: cv2.imread('panel_test.jpg')
+        ImageType.PANEL_TEST: cv2.imread('panel_test.jpg'),
+        ImageType.ROOF_TEST: cv2.imread('roof_test.jpg')
     }
 
     @staticmethod

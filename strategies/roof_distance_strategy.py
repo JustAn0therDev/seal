@@ -9,7 +9,6 @@ class RoofDistanceStrategy(DistanceStrategy):
             for keypoint in keypoints:
                 x, y = keypoint.pt
                 if camera_axis.min_x_axis <= x < camera_axis.max_x_axis and y >= camera_axis.middle_y_axis:
-                    # print('Detected object: %s' % str((x, y)))
                     detected_count += 1
             if detected_count >= 5:
                 print('CLOSE OBJECT. Detected: %i' % detected_count)

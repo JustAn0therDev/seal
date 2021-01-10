@@ -25,7 +25,7 @@ class Detector:
         self.keypoints = self.fast_instance.detect(self.converted_img_from_frame, None)
 
     def set_polygons_representing_lane_region(self):
-        self.camera_axis = CameraAxisFactory.make_camera_axis_object(self.camera_position)
+        self.camera_axis = CameraAxisFactory.create_camera_axis_object(self.camera_position)
         video_height = self.canny.shape[0]
         self.polygons = np.array(
             [
