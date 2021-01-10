@@ -5,12 +5,13 @@ from detector import Detector
 from matplotlib import pyplot as plt
 from enums.image_type import ImageType
 from enums.video_type import VideoType
-from utils.file_opener import FileOpener
+from factories.image_object_factory import ImageObjectFactory
+from factories.video_capture_object_factory import VideoCaptureObjectFactory
 from utils.constants import COMMON_THRESHOLD
 from enums.camera_position import CameraPosition
 
-opened_video_capture = FileOpener.get_video_capture_by_video_type(VideoType.PARKING)
-lane_space_test_img = FileOpener.get_image_by_image_type(ImageType.PARKING_TEST)
+opened_video_capture = VideoCaptureObjectFactory().create_video_capture_object(VideoType.FAST)
+test_img = ImageObjectFactory().create_image_object(ImageType.LANE_TEST)
 
 if not opened_video_capture.isOpened():
     print('Error while opening video.')
@@ -30,12 +31,9 @@ class Program:
                                          camera_position=camera_position)
 
                 self.detector.set_polygons_representing_lane_region()
-                self.detector.set_masked_image()
-                self.detector.set_image_with_only_lane_lines()
                 self.detector.set_keypoints_from_blurred_image()
                 self.detector.set_image_with_lanes()
 
-                # img_with_keypoints = self.detector.get_image_with_lanes_and_keypoints((255, 255, 255))
                 img_with_keypoints = self.detector.get_image_with_only_keypoints()
 
                 self.detector.print_object_detection()
@@ -53,7 +51,7 @@ class Program:
 
 
 def test_lane():
-    plt.imshow(lane_space_test_img)
+    plt.imshow(test_img)
     plt.show()
 
 
