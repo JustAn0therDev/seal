@@ -5,10 +5,10 @@ from detector import Detector
 from matplotlib import pyplot as plt
 from enums.image_type import ImageType
 from enums.video_type import VideoType
-from factories.image_object_factory import ImageObjectFactory
-from factories.video_capture_object_factory import VideoCaptureObjectFactory
 from utils.constants import COMMON_THRESHOLD
 from enums.camera_position import CameraPosition
+from factories.image_object_factory import ImageObjectFactory
+from factories.video_capture_object_factory import VideoCaptureObjectFactory
 
 opened_video_capture = VideoCaptureObjectFactory().create_video_capture_object(VideoType.SLOW)
 test_img = ImageObjectFactory().create_image_object(ImageType.LANE_TEST)
