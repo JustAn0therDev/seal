@@ -3,14 +3,14 @@ import numpy as np
 from sys import argv
 from detector import Detector
 from matplotlib import pyplot as plt
-from utils.file_opener import FileOpener
 from enums.image_type import ImageType
 from enums.video_type import VideoType
+from utils.file_opener import FileOpener
 from utils.constants import COMMON_THRESHOLD
 from enums.camera_position import CameraPosition
 
 opened_video_capture = FileOpener.get_video_capture_by_video_type(VideoType.PARKING)
-lane_space_test_img = FileOpener.get_image_by_image_type(ImageType.ROOF_TEST)
+lane_space_test_img = FileOpener.get_image_by_image_type(ImageType.PARKING_TEST)
 
 if not opened_video_capture.isOpened():
     print('Error while opening video.')
@@ -70,6 +70,8 @@ if len(argv) == 0 or argv[1] == 'run':
         pos = CameraPosition.ROOF
     elif argv[2].lower() == 'panel':
         pos = CameraPosition.PANEL
+    elif argv[2].lower() == 'rearview':
+        pos = CameraPosition.REAR_VIEW
     else:
         raise Exception("You cannot run the program without specifying a valid camera position.")
 

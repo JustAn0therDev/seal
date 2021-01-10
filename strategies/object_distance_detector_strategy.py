@@ -3,6 +3,7 @@ from enums.camera_position import CameraPosition
 from strategies.distance_strategy import DistanceStrategy
 from strategies.panel_distance_strategy import PanelDistanceStrategy
 from strategies.roof_distance_strategy import RoofDistanceStrategy
+from strategies.rear_view_distance_strategy import RearViewDistanceStrategy
 
 
 class ObjectDistanceDetectorStrategy:
@@ -13,6 +14,8 @@ class ObjectDistanceDetectorStrategy:
             self.__strategy = RoofDistanceStrategy()
         elif self.camera_position == CameraPosition.PANEL:
             self.__strategy = PanelDistanceStrategy()
+        elif self.camera_position == CameraPosition.REAR_VIEW:
+            self.__strategy = RearViewDistanceStrategy()
         else:
             raise Exception("Invalid camera position for strategy.")
 
