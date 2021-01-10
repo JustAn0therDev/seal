@@ -10,7 +10,7 @@ from factories.video_capture_object_factory import VideoCaptureObjectFactory
 from utils.constants import COMMON_THRESHOLD
 from enums.camera_position import CameraPosition
 
-opened_video_capture = VideoCaptureObjectFactory().create_video_capture_object(VideoType.FAST)
+opened_video_capture = VideoCaptureObjectFactory().create_video_capture_object(VideoType.SLOW)
 test_img = ImageObjectFactory().create_image_object(ImageType.LANE_TEST)
 
 if not opened_video_capture.isOpened():
@@ -23,6 +23,8 @@ class Program:
         self.detector = None
 
     def run_program(self, camera_position: CameraPosition):
+        ascii_for_q = ord('q')
+        ascii_for_Q = ord('Q')
         while self.video_capture.isOpened():
             frame_was_captured, frame = self.video_capture.read()
             if frame_was_captured:
@@ -40,7 +42,7 @@ class Program:
 
                 cv2.imshow('Seal', img_with_keypoints)
 
-                if cv2.waitKey(25) & 0xFF == ord('q'):
+                if cv2.waitKey(25) & 0xFF in [ascii_for_q, ascii_for_Q]:
                     break
 
             else:
