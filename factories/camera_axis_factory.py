@@ -7,7 +7,7 @@ class CameraAxisFactory:
     def create_camera_axis_object(camera_position: CameraPosition):
         dictionary_of_camera_positions_and_axis = {
             CameraPosition.ROOF: CameraAxis(min_x_axis=25, max_x_axis=530, middle_x_axis=300, middle_y_axis=280),
-            CameraPosition.PANEL: CameraAxis(min_x_axis=15, max_x_axis=570, middle_x_axis=300, middle_y_axis=165),
+            CameraPosition.PANEL: CameraAxis(min_x_axis=15, max_x_axis=570, middle_x_axis=300, middle_y_axis=170),
             CameraPosition.REAR_VIEW: CameraAxis(min_x_axis=25, max_x_axis=600, middle_x_axis=300, middle_y_axis=100)
         }
 

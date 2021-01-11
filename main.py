@@ -10,7 +10,7 @@ from enums.camera_position import CameraPosition
 from factories.image_object_factory import ImageObjectFactory
 from factories.video_capture_object_factory import VideoCaptureObjectFactory
 
-opened_video_capture = VideoCaptureObjectFactory().create_video_capture_object(VideoType.SLOW)
+opened_video_capture = VideoCaptureObjectFactory().create_video_capture_object(VideoType.FAST)
 test_img = ImageObjectFactory().create_image_object(ImageType.LANE_TEST)
 
 if not opened_video_capture.isOpened():
