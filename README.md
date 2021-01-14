@@ -1,6 +1,8 @@
 # seal | see-all
 *seal* is an application made to detect object distances for drivers with some kind of visual impairment or in unusual conditions such as rainy nights.
 
+![Seal detecting close cars in a highway](./seal.jpg)
+
 It was made using Python, Numpy and OpenCV to detect objects or cars that could possibly be closer than they appear. People with visual impairment, such as myopia,
 might have trouble to judge an object's distance from their car, especially at night or in rainy days. 
 
