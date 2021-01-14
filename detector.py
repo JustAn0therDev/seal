@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
-from factories.camera_axis_factory import CameraAxisFactory
 from enums.camera_position import CameraPosition
+from factories.camera_axis_factory import CameraAxisFactory
 from strategies.object_distance_detector_strategy import ObjectDistanceDetectorStrategy
 
 
